@@ -1,0 +1,6 @@
+﻿<div class="alerts">
+    <div *ngFor="let alert of alerts" class="{{ cssClass(alert) }} alert-dismissable fade-in">
+        {{alert.content}}
+        <a class="close" (click)="removeAlert(alert)">&times;</a>
+    </div>
+</div>
