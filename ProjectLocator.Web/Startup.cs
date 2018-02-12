@@ -18,7 +18,7 @@ using ProjectLocator.Web.Areas.Appliaction;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Reflection;
-using Hangfire.SqlServer;
+using Hangfire.PostgreSql;
 
 namespace ProjectLocator.Web
 {
@@ -37,6 +37,8 @@ namespace ProjectLocator.Web
             //services.AddDbContext<SchoolContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("ScheduleConnection"),
             //    b => b.MigrationsAssembly("ProjectLocator.Database")));
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<IdentityContext>(options => options.UseNpgsql(Configuration.GetConnectionString("IdentityConnection")));
 
             //services.AddDbContext<SchoolContext>(options => options.UseInMemoryDatabase());
 
@@ -75,15 +77,15 @@ namespace ProjectLocator.Web
             services.AddMvc();
             services.AddLogging();
 
-            var sqlServerStorageOptions = new SqlServerStorageOptions
+            var sqlServerStorageOptions = new PostgreSqlStorageOptions
             {
                 QueuePollInterval = TimeSpan.FromSeconds(5),
             };
 
             services.AddHangfire(config =>
-                    config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"), sqlServerStorageOptions));
+                config.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection"), sqlServerStorageOptions));
 
-            JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("HangfireConnection"));
+            JobStorage.Current = new PostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection"));
 
             services.AddEmailsService();
             services.AddApplicationService();
